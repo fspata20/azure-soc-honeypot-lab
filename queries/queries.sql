@@ -1,0 +1,12 @@
+SecurityEvent| where EventID == 4625
+| where IpAddress == <attacker IP address>
+
+_GetWatchlist("geoip")
+
+let GeoIPDB_FULL = _GetWatchlist("geoip");
+let WindowsEvents = SecurityEvent
+    | where IpAddress == <attacker IP address>
+    | where EventID == 4625
+    | order by TimeGenerated desc
+    | evaluate ipv4_lookup(GeoIPDB_FULL, IpAddress, network);
+WindowsEvents
